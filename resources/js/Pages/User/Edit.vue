@@ -3,15 +3,20 @@ import { ref } from 'vue';
 import AppLayout from '@/Layouts/AppLayout.vue';
 import { Inertia } from '@inertiajs/inertia';
 
+const props = defineProps(['user']);
+
 const form = ref({
-  name: "",
-  email: "",
-  password: "",
-});
+    name: props.user.name,
+    email: props.user.email,
+    password: props.user.password,
+})
+
 
 const submitForm = async () => {
     try {
-        await Inertia.post(route('user.store'), form.value);
+        // Construye la URL con el identificador del usuario
+        const url = route('user.update', { user: props.user.id });
+        await Inertia.put(url, form.value);
     } catch (error) {
         console.error(error);
     }
@@ -44,7 +49,8 @@ const submitForm = async () => {
                             </div>
                             <div class="mb-5">
                                 <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Correo</label>
-                                <input type="email" v-model="form.email" id="email" placeholder="Escribe tu Correo Electronico"
+                                <input type="email" v-model="form.email" id="email"
+                                    placeholder="Escribe tu Correo Electronico"
                                     class="w-full p-2.5 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
                                     required />
                                 <div v-if="$page.props.errors.email" class="text-red-500">
@@ -54,9 +60,9 @@ const submitForm = async () => {
                             <div class="mb-5">
                                 <label for="password"
                                     class="block mb-2 text-sm font-medium text-gray-900">Contraseña</label>
-                                <input type="password" v-model="form.password" id="password" placeholder="Escribe tu Contraseña"
-                                    class="w-full p-2.5 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500"
-                                    required />
+                                <input type="password" v-model="form.password" id="password"
+                                    class="w-full p-2.5 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500" />
+                                <small class="text-gray-600">Deje en blanco si no desea cambiar la contraseña</small>
                                 <div v-if="$page.props.errors.password" class="text-red-500">
                                     {{ $page.props.errors.password }}
                                 </div>
