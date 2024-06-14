@@ -17,7 +17,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $search = $request->get('search', '');        
+        $search = $request->get('search', '');
         $users = User::query()
             ->where('name', 'like', "%{$search}%")
             ->orWhere('email', 'like', "%{$search}%")
@@ -77,6 +77,9 @@ class UserController extends Controller
             $validatedData['password'] = Hash::make($validatedData['password']);
         }
         $user->update($validatedData);
+        if (request()->hasFile('avatar')) {
+            $user->updateProfilePhoto(request()->file('avatar'));
+        }
         return Inertia::location(route('user.index')); // Redirigir utilizando Inertia.js
     }
 
@@ -88,5 +91,12 @@ class UserController extends Controller
         $user->delete();
         Session::flash('message', 'El usuario a sido eliminado');
         return Inertia::location(route('user.index')); // Redirigir utilizando Inertia.js
+    }
+
+    public function deleteAvatar(User $user)
+    {
+        $user->deleteProfilePhoto();
+        Session::flash('message', 'Avatar Eliminado');
+        return Inertia::location(route('user.edit', ['user' => $user]));
     }
 }

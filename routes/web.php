@@ -35,4 +35,5 @@ Route::middleware([
         return Inertia::render('Dashboard');
     })->name('dashboard');
     Route::resource('user', UserController::class);
+    Route::delete('/user/{user}/avatar', [UserController::class, 'deleteAvatar'])->name('user.deleteAvatar');
 });
